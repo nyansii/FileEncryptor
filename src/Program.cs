@@ -44,30 +44,23 @@ class Program
             return;
         }
 
-        try
+        // All files existing in the directory of Path passed in argument 1 are encrypted into *.asset files and output to the position of Path of argument 2.
+        foreach (var file in new DirectoryInfo(inputDirectoryPath).GetFiles("*", SearchOption.AllDirectories))
         {
-            // All files existing in the directory of Path passed in argument 1 are encrypted into *.asset files and output to the position of Path of argument 2.
-            foreach (var file in new DirectoryInfo(inputDirectoryPath).GetFiles("*", SearchOption.AllDirectories))
-            {
-                // Get output file path.
-                var outputFilePath = file.FullName.Replace(inputDirectoryPath, outputDirectoryPath);
-                outputFilePath = outputFilePath.Remove(outputFilePath.LastIndexOf("."), outputFilePath.Length - outputFilePath.LastIndexOf(".")) + $".{fileExtension}";
+            // Get output file path.
+            var outputFilePath = file.FullName.Replace(inputDirectoryPath, outputDirectoryPath);
+            outputFilePath = outputFilePath.Remove(outputFilePath.LastIndexOf("."), outputFilePath.Length - outputFilePath.LastIndexOf(".")) + $".{fileExtension}";
 
-                // Get output directory.
-                var outputDirectory = outputFilePath.Remove(outputFilePath.LastIndexOf(@"\"), outputFilePath.Length - outputFilePath.LastIndexOf(@"\"));
+            // Get output directory.
+            var outputDirectory = outputFilePath.Remove(outputFilePath.LastIndexOf(@"\"), outputFilePath.Length - outputFilePath.LastIndexOf(@"\"));
 
-                // Create directory.
-                if (!Directory.Exists(outputDirectory)) Directory.CreateDirectory(outputDirectory);
+            // Create directory.
+            if (!Directory.Exists(outputDirectory)) Directory.CreateDirectory(outputDirectory);
 
-                // File encrypt.
-                await Encryptor.Encrypt(key, file.FullName, outputFilePath);
-            }
-
-            Console.WriteLine("Encryption successfully completed.");
+            // File encrypt.
+            await Encryptor.Encrypt(key, file.FullName, outputFilePath);
         }
-        catch (Exception)
-        {
-            Console.WriteLine("Encryption did not complete successfully due to an error.");
-        }
+
+        Console.WriteLine("Encryption successfully completed.");
     }
 }

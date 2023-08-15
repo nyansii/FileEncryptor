@@ -35,6 +35,7 @@ public class Encryptor
             Console.WriteLine("ERROR!!");
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
+            return;
         }
     }
 
