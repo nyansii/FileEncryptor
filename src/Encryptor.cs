@@ -10,8 +10,8 @@ public class Encryptor
     /// </summary>
     /// <param name="inputFilePath"></param>
     /// <param name="outputFilePath"></param>
-    /// <returns></returns>
-    public static async Task Encrypt(string key, string inputFilePath, string outputFilePath)
+    /// <returns>Returns true if the encryption was successful.</returns>
+    public static async Task<bool> Encrypt(string key, string inputFilePath, string outputFilePath)
     {
         try
         {
@@ -29,13 +29,15 @@ public class Encryptor
             {
                 await cryptoStream.WriteAsync(buffer, 0, len);
             }
+
+            return true;
         }
         catch (Exception e)
         {
             Console.WriteLine("ERROR!!");
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
-            return;
+            return false;
         }
     }
 
@@ -44,7 +46,7 @@ public class Encryptor
     /// </summary>
     /// <param name="inputFilePath"></param>
     /// <returns></returns>
-    public static async Task<byte[]> Decrypt(string key, string inputFilePath)
+    public static async Task<byte[]?> Decrypt(string key, string inputFilePath)
     {
         try
         {
@@ -71,7 +73,7 @@ public class Encryptor
             Console.WriteLine("ERROR!!");
             Console.WriteLine(e.Message);
             Console.WriteLine(e.StackTrace);
-            return Array.Empty<byte>();
+            return null;
         }
     }
 }

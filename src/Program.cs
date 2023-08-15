@@ -58,7 +58,12 @@ class Program
             if (!Directory.Exists(outputDirectory)) Directory.CreateDirectory(outputDirectory);
 
             // File encrypt.
-            await Encryptor.Encrypt(key, file.FullName, outputFilePath);
+            var result = await Encryptor.Encrypt(key, file.FullName, outputFilePath);
+            if (!result)
+            {
+                Console.WriteLine("Encryption did not complete successfully due to an error.");
+                return;
+            }
         }
 
         Console.WriteLine("Encryption successfully completed.");
