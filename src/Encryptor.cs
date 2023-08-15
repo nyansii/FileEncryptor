@@ -13,19 +13,28 @@ public class Encryptor
     /// <returns></returns>
     public static async Task Encrypt(string key, string inputFilePath, string outputFilePath)
     {
-        using var inputFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
-        using var outputFileStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
-        using var aes = Aes.Create();
-        using var cryptoStream = new CryptoStream(outputFileStream, aes.CreateEncryptor(Encoding.UTF8.GetBytes(key), aes.IV), CryptoStreamMode.Write);
-
-        byte[] dummy = new byte[16];
-        await cryptoStream.WriteAsync(dummy, 0, 16);
-
-        byte[] buffer = new byte[8192];
-        int len = 0;
-        while((len = await inputFileStream.ReadAsync(buffer, 0, 8192)) > 0)
+        try
         {
-            await cryptoStream.WriteAsync(buffer, 0, len);
+            using var inputFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
+            using var outputFileStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write);
+            using var aes = Aes.Create();
+            using var cryptoStream = new CryptoStream(outputFileStream, aes.CreateEncryptor(Encoding.UTF8.GetBytes(key), aes.IV), CryptoStreamMode.Write);
+
+            byte[] dummy = new byte[16];
+            await cryptoStream.WriteAsync(dummy, 0, 16);
+
+            byte[] buffer = new byte[8192];
+            int len = 0;
+            while((len = await inputFileStream.ReadAsync(buffer, 0, 8192)) > 0)
+            {
+                await cryptoStream.WriteAsync(buffer, 0, len);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("ERROR!!");
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
         }
     }
 
@@ -36,22 +45,32 @@ public class Encryptor
     /// <returns></returns>
     public static async Task<byte[]> Decrypt(string key, string inputFilePath)
     {
-        using var aes = Aes.Create();
-        using var inputFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
-        using var memoryStream = new MemoryStream();
-        using var cryptoStream = new CryptoStream(inputFileStream, aes.CreateDecryptor(Encoding.UTF8.GetBytes(key), aes.IV), CryptoStreamMode.Read);
-
-        byte[] dummy = new byte[16];
-        await cryptoStream.ReadAsync(dummy, 0, 16);
-
-        byte[] buffer = new byte[8192];
-        int len = 0;
-        while ((len = await cryptoStream.ReadAsync(buffer, 0, 8192)) > 0)
+        try
         {
-            await memoryStream.WriteAsync(buffer, 0, len);
-            await memoryStream.FlushAsync();
-        }
+            using var aes = Aes.Create();
+            using var inputFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read);
+            using var memoryStream = new MemoryStream();
+            using var cryptoStream = new CryptoStream(inputFileStream, aes.CreateDecryptor(Encoding.UTF8.GetBytes(key), aes.IV), CryptoStreamMode.Read);
 
-        return memoryStream.ToArray();
+            byte[] dummy = new byte[16];
+            await cryptoStream.ReadAsync(dummy, 0, 16);
+
+            byte[] buffer = new byte[8192];
+            int len = 0;
+            while ((len = await cryptoStream.ReadAsync(buffer, 0, 8192)) > 0)
+            {
+                await memoryStream.WriteAsync(buffer, 0, len);
+                await memoryStream.FlushAsync();
+            }
+
+            return memoryStream.ToArray();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("ERROR!!");
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.StackTrace);
+            return Array.Empty<byte>();
+        }
     }
 }
