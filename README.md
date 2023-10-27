@@ -12,8 +12,16 @@ Copy the Library folder in Repository into the project directory that uses it.
 #### Step.2
 Use the following console command.
 ```console
-dotnet {your workspace directory}/Library/FileEncryptor/FileEncryptor.dll {input directory} {output directory} {key} {file extension}
+dotnet {your workspace directory}/Library/FileEncryptor/FileEncryptor.dll {input directory} {output directory} {key file} {file extension}
 ```
+
+- Now, instead of passing the Key directly as an argument, it has been changed to pass the path of the Json file in which the Key is written.
+```Json
+{
+	"Value": <key>
+}
+```
+
 #### Tips
 - All files including subfiles in {input directory} will be encrypted and output to {output directory}.
 - Enter a 32-character random number for the key.
